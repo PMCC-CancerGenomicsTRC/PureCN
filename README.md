@@ -23,6 +23,25 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("PureCN")
 ```
 
+## Supported versions
+
+The experimental compatibility target for this branch is R 4.5.3 and
+Bioconductor 3.22. CI also checks Bioconductor devel; devel is intended as an
+early compatibility signal, not a supported production combination. The Docker
+image uses the Bioconductor 3.22 container.
+
+To install this source checkout with its dependencies in the supported
+Bioconductor release, run:
+
+```
+BiocManager::install(version = "3.22")
+install.packages("remotes")
+remotes::install_local(".", dependencies = TRUE)
+```
+
+The standard `BiocManager::install("PureCN")` command above installs the
+published Bioconductor release, not this checkout.
+
 If your R/Bioconductor version is
 [outdated](https://bioconductor.org/about/release-announcements/), this will
 install an old and unsupported version.
@@ -40,6 +59,20 @@ If you want the latest and greatest from the developer branch:
 BiocManager::install("lima1/PureCN")
 ```
 
+### Troubleshooting mixed-library warnings
+
+For warnings such as `stack imbalance`, first check whether the installed
+packages match the active R and Bioconductor versions:
+
+```
+BiocManager::valid()
+sessionInfo()
+```
+
+Rebuild the environment in a clean library or container if packages were
+carried over from another R installation. Do not share compiled package
+libraries across different R minor versions.
+
 To get the lastest stable version from
 [Conda](https://anaconda.org/bioconda/bioconductor-purecn) (unstable is
 currently only available from GitHub directly):
@@ -56,6 +89,9 @@ latest stable version with recommended dependencies such as
 ```
 docker pull markusriester/purecn:latest
 ```
+
+The Docker build pins GATK 4.6.1.0, matching the version used by CI, to keep
+external-tool behavior consistent between these environments.
 
 
 ## Tutorials
