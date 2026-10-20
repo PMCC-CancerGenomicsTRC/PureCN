@@ -1,4 +1,4 @@
-FROM bioconductor/bioconductor_docker:RELEASE_3_19
+FROM bioconductor/bioconductor_docker:RELEASE_3_22
 #FROM bioconductor/bioconductor_docker:devel
 
 # install base packages
@@ -60,7 +60,9 @@ RUN Rscript -e 'library(remotes);\
 remotes::install_github("nalinigans/GenomicsDB-R", ref="master", configure.args="--with-genomicsdb=/opt/GenomicsDB/")'
 
 # install PureCN
-RUN Rscript -e 'BiocManager::install("PureCN", dependencies = TRUE)'
+COPY . /tmp/PureCN
+RUN Rscript -e 'remotes::install_local("/tmp/PureCN", dependencies = TRUE, \
+    repos = BiocManager::repositories(), upgrade = TRUE)'
 #RUN Rscript -e 'BiocManager::install("lima1/PureCN", ref = "RELEASE_3_19", dependencies = TRUE)'
 ENV PURECN=/usr/local/lib/R/site-library/PureCN/extdata
 
@@ -70,7 +72,7 @@ WORKDIR /opt
 RUN ln -s $PURECN /opt/PureCN
 
 # install GATK4
-ENV GATK_VERSION="4.5.0.0"
+ENV GATK_VERSION="4.6.1.0"
 RUN wget --no-verbose https://github.com/broadinstitute/gatk/releases/download/${GATK_VERSION}/gatk-${GATK_VERSION}.zip && \
     unzip gatk-${GATK_VERSION}.zip -d /opt && \
     rm gatk-${GATK_VERSION}.zip
